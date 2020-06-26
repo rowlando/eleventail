@@ -1,8 +1,84 @@
 const { DateTime }  = require('luxon');
 const util          = require('util');
+const moment        = require("moment");
+
+function generateDateSet(collection, format){
+  let dateSet = new Set();
+
+  collection.getAllSorted().forEach(function(item) {
+    if( "date" in item.data ) {
+
+      var tags = item.data.tags;
+      if( typeof tags === "string" ) {
+        tags = [tags];
+      }
+      if ( tags && ( tags.includes("post") ) ){
+        let itemDate = item.data.date;
+        var date = moment(itemDate).format(format);
+        dateSet.add(date);
+      }     
+    }
+  });
+
+  return Array.from(dateSet);
+}
+
+function getItemsByDate(collection, date, format){
+
+  var result = {};
+  result = collection.getAll().filter(function(item) {
+
+      var tags = item.data.tags;
+
+      if( typeof tags === "string" ) {
+        tags = [tags];
+      }
+
+      if ( tags && ( tags.includes("post") ) ){
+
+        if( !item.data.date ){
+          return false;
+        }
+
+        var itemDate = item.data.date;
+        var itemShortDate = moment(itemDate).format(format);
+
+        return (itemShortDate == date);
+      };
+      return false;
+    });
+
+  result = result.sort(function(a, b) {
+    return b.date - a.date;
+  });
+
+  return result;
+}
+
+const contentByDateString = (collection, format) => {
+  var dateSet = {};
+  var newSet = new Set();
+
+  dateSet = generateDateSet(collection, format);
+
+  dateSet.forEach(function(date){
+    var result = getItemsByDate(collection, date, format)
+    newSet[date] = result;
+  });
+
+  return [{...newSet}];
+}
+
+function contentByYear(collection) {
+  return contentByDateString(collection, "YYYY");
+}
 
 module.exports = function(eleventyConfig) {
 
+  eleventyConfig.addCollection("collectionByYear" , function(collection) {
+    var collectionByYear = contentByYear(collection);
+    return collectionByYear[0];
+  });
 
   // Layout aliases for convenience
   eleventyConfig.addLayoutAlias('default', 'layouts/base.njk');
@@ -17,8 +93,9 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addFilter('readableDate', dateObj => {
     return DateTime.fromJSDate(dateObj, {
       zone: 'utc'
-    }).toFormat('LLLL d, y');
+    }).toFormat('dd/MM/yy');
   });
+
   eleventyConfig.addFilter('htmlDate', dateObj => {
     return DateTime.fromJSDate(dateObj, {
       zone: 'utc'

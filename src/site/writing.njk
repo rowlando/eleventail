@@ -1,0 +1,31 @@
+---
+title: Writing archive
+layout: default
+---
+
+<div class="intro p-12">
+
+  <div class="container mx-auto">
+    <h1 class="bg-white bg-opacity-75 max-w-md text-6xl">{{ title }}</h1>
+  </div>
+</div>
+
+<div class="container mx-auto">
+{% for year in [2020,2019,2018] -%}
+    <div class="grid grid-cols-6 mb-8">
+
+        {% if collections.collectionByYear[year] %}
+            <h2 class="font-bold text-gray-900 leading-none text-3xl font-serif col-start-1 col-span-1 ">{{year}}</h2>
+        {% endif %}
+
+        {% for item in collections.collectionByYear[year] -%}
+            
+            <div class="col-start-2 col-end-7 ">
+                <span style="font-variant-numeric: tabular-nums;" class="mr-8 text-gray-600 font-light">{{ item.date | readableDate }}</span>
+                <a href="{{ item.url }}" class="font-serif">{{ item.data.title }}</a>
+            </div>
+        {% endfor -%}
+    </div>
+{% endfor -%}
+</div>
+

@@ -1,21 +1,19 @@
-
-<header class="bg-teal-500 flex justify-between px-4 py-2 mb-10">
-  {% if page.url == "/" %}
-  <h1 class=" text-white font-medium text-2xl">O RLY?</h1>
-  {% else %}
-  <h1 class=" text-white font-medium text-2xl"><a href="/">ElevenTail <small class="text-sm">a site scaffold</small></a></h1>
-  {% endif %}
+<div class="container mx-auto">
+<header class="flex justify-between py-2 my-8">
+  <a href="/" class="">
+    <img src="/images/avatar.svg" alt="Back to homepage" class="w-10" loading="lazy" decoding="async">
+  </a>
   <nav>
     {%
       set linkList = [
-        { "url": "/about" , "text": "About"},
-        { "url": "/blog" , "text": "Blog"},
-        { "url": pkg.repository.url , "text": "GitHub"}
+        { "url": "/writing" , "text": "Writing"},
+        { "url": "https://twitter.com/rowlando" , "text": "Twitter"},
+        { "url": "https://microblog.rowlando.dev/" , "text": "Microblog"}
       ]
     %}
     {% include "navigation-links.njk" %}
   </nav>
 </header>
-
+</div>
 
 
